@@ -22,3 +22,9 @@ cache: lfu.o
 
 lfu.o: ./LFU/lfu.cpp
 	g++ -c ./LFU/lfu.cpp $(FLAGS) -o obj/lfu.o
+
+ideal_cache: ideal.o
+	g++ obj/ideal.o $(FLAGS) -o ./main
+
+ideal.o:
+	g++ -c ./LFU/ideal.cpp $(FLAGS) -o obj/ideal.o
