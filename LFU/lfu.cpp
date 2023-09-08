@@ -2,19 +2,25 @@
 
 int slow_get_page (int key) {return key;}
 
-int main()
+int main(int argc, char **argv)
 {
+    std::ifstream test_file;
+
+    test_file.open(argv[1]);
+
     size_t my_capacity  = 0;
     size_t values_count = 0;
 
-    std::cin >> my_capacity >> values_count;
+    test_file >> my_capacity >> values_count;
+
+    // std::cin >> my_capacity >> values_count;
 
     lfu::cache_t<int> my_cache(my_capacity);
 
     for (size_t i = 0; i < values_count; i++)
     {
         int elem = 0;
-        std::cin >> elem;
+        test_file >> elem;
 
         my_cache.LookUpUpdate(elem, slow_get_page);
         my_cache.Dump();

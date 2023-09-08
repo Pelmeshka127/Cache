@@ -7,29 +7,52 @@
 #include <sstream>
 #include <format>
 
-int TestGenerator(const size_t capacity, const size_t input_size, const int tests_count)
+namespace testgen
 {
-    std::ofstream test_files[input_size];
 
-    for (size_t index = 0; index < tests_count; index++)
-    {
-        std::string file_name = "test" + std::to_string(index) + ".txt";
-        
-        test_files[index].open(file_name);
+class testgen_t
+{
+    private:
 
-        test_files[index] << capacity << " " << input_size << std::endl;
+        size_t capacity_;
 
-        for (size_t count = 0; count < input_size; count++)
+        size_t input_size_;
+
+        size_t tests_count_;
+
+    public:
+
+        testgen_t(const size_t capacity, const size_t input_size, const size_t tests_count)
         {
-            size_t elem = std::rand() % 100;
+            capacity_       = capacity;
 
-            test_files[index] << elem << " ";
-        }
+            input_size_     = input_size;
 
-        test_files[index].close();
+            tests_count_    = tests_count;
+
+            std::ofstream test_files[input_size];
+
+            for (size_t index = 0; index < tests_count; index++)
+            {
+                std::string file_name = "Tests/test" + std::to_string(index) + ".txt";
+                
+                test_files[index].open(file_name);
+
+                test_files[index] << capacity << " " << input_size << std::endl;
+
+                for (size_t count = 0; count < input_size; count++)
+                {
+                    size_t elem = size_t (std::rand() % 10);
+
+                    test_files[index] << elem << " ";
+                }
+
+                test_files[index].close();
+            }
+
     }
 
-    return 0;
-}
+};
 
+}
 #endif

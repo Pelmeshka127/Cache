@@ -18,13 +18,19 @@ FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++\
 
 
 cache: lfu.o
-	g++ obj/lfu.o $(FLAGS) -o ./main
+	g++ obj/lfu.o $(FLAGS) -o ./cache
 
 lfu.o: ./LFU/lfu.cpp
 	g++ -c ./LFU/lfu.cpp $(FLAGS) -o obj/lfu.o
 
 ideal_cache: ideal.o
-	g++ obj/ideal.o $(FLAGS) -o ./main
+	g++ obj/ideal.o $(FLAGS) -o ./ideal
 
 ideal.o:
 	g++ -c ./LFU/ideal.cpp $(FLAGS) -o obj/ideal.o
+
+test: test.o
+	g++ obj/test.o $(FLAGS) -o ./test
+
+test.o:
+	g++ -c ./Tests/tests.cpp $(FLAGS) -o obj/test.o

@@ -2,7 +2,7 @@
 
 int main()
 {
-    TestGenerator(3, 10, 3);
+    testgen::testgen_t tests(3, 10, 3);
 
     return 0;
 }
