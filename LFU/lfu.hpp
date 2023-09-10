@@ -58,7 +58,7 @@ class cache_t
                 if (IsFull())
                     DeleteMinCounting();
 
-                PushBack(key, slow_get_page);
+                PushFront(key, slow_get_page);
 
                 SortCache();
 
@@ -84,7 +84,7 @@ class cache_t
         }
 
         template<typename F>
-        void PushBack(KeyT key, F slow_get_page)
+        void PushFront(KeyT key, F slow_get_page)
         {
             cache_.push_front({slow_get_page(key), 0, key});
 

@@ -6,6 +6,9 @@
 #include <string>
 #include <sstream>
 #include <format>
+#include <cstddef>
+
+//==========================================================================================//
 
 namespace testgen
 {
@@ -13,7 +16,6 @@ namespace testgen
 class testgen_t
 {
     private:
-
         size_t capacity_;
 
         size_t input_size_;
@@ -21,7 +23,6 @@ class testgen_t
         size_t tests_count_;
 
     public:
-
         testgen_t(const size_t capacity, const size_t input_size, const size_t tests_count)
         {
             capacity_       = capacity;
@@ -32,9 +33,9 @@ class testgen_t
 
             std::ofstream test_files[input_size];
 
-            for (size_t index = 0; index < tests_count; index++)
+            for (size_t index = 1; index <= tests_count; index++)
             {
-                std::string file_name = "Tests/test" + std::to_string(index) + ".txt";
+                std::string file_name = "Tests/" + std::to_string(index) + "test.txt";
                 
                 test_files[index].open(file_name);
 
@@ -55,4 +56,7 @@ class testgen_t
 };
 
 }
+
+//==========================================================================================//
+
 #endif

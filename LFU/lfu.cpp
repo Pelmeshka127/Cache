@@ -1,9 +1,17 @@
 #include "lfu.hpp"
 
+//==========================================================================================//
+
 int slow_get_page (int key) {return key;}
 
 int main(int argc, char **argv)
 {
+    if (argc != 2)
+    {
+        std::cerr << "Incorrect number of command line arguments" << std::endl;
+        return -1;
+    }
+    
     std::ifstream test_file;
 
     test_file.open(argv[1]);
@@ -12,8 +20,6 @@ int main(int argc, char **argv)
     size_t values_count = 0;
 
     test_file >> my_capacity >> values_count;
-
-    // std::cin >> my_capacity >> values_count;
 
     lfu::cache_t<int> my_cache(my_capacity);
 
@@ -31,3 +37,5 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+//==========================================================================================//
