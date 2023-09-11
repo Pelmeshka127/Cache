@@ -33,3 +33,10 @@ make ideal_cache
 
 ./ideal <test>
 ```
+
+Для запуска работы компаратора двух кешей:
+```
+make comparator
+
+./comp <test>
+```

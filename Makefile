@@ -18,3 +18,9 @@ test: test.o
 
 test.o:
 	g++ -c ./Tests/tests.cpp $(FLAGS) -o obj/test.o
+
+comparation: comp.o
+	g++ obj/comp.o $(FLAGS) -o ./comp
+
+comp.o:
+	g++ -c ./LFU/comparation.cpp $(FLAGS) -o obj/comp.o

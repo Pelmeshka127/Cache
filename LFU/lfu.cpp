@@ -34,6 +34,7 @@ int main(int argc, char **argv)
 
     std::cout << "Total hits are " << my_cache.GetHits() << std::endl;
     
+    test_file.close();
 
     return 0;
 }

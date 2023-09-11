@@ -48,7 +48,11 @@ int main(int argc, char **argv)
         my_cache.LookUpUpdate(elem, slow_get_page(elem));
 
         my_cache.DumpCache();
+
+        std::cout << "Total hits are " << my_cache.GetHits() << std::endl;
     }
+
+    test_file.close();
 
     return 0;
 }

@@ -17,6 +17,10 @@ template <typename PageT, typename KeyT = int>
 class ideal_cache_t
 {
     private:
+        size_t capacity_;
+
+        size_t hits_;
+        
         struct UniqueCacheNode {
             KeyT                key;
             std::list<size_t>   location;
@@ -40,10 +44,6 @@ class ideal_cache_t
                 auto find_element = unique_hash_.find(*array_element);
                 if (find_element == unique_hash_.end())
                 {
-                    // std::cout << "Working with " << *array_element << std::endl;
-                    
-                    // std::cout << "Size of list is " << unique_array_.size() << std::endl;
-
                     std::list<size_t> key_location = {array_index};
 
                     unique_array_.push_back({*array_element, key_location});
@@ -57,7 +57,7 @@ class ideal_cache_t
 
                 else
                 {
-                    find_element->second->location.push_back(std::distance(array.begin(), array_element));
+                    find_element->second->location.push_back(size_t(std::distance(array.begin(), array_element)));
                 }
 
                 array_index++;
@@ -66,14 +66,11 @@ class ideal_cache_t
         }
 
     private:
-        size_t capacity_;
-
-        size_t hits_;
-
         struct CacheNode {
             PageT   page;
             KeyT    key;
             size_t  distance;
+            size_t  hit_count;
         };
 
         std::list<CacheNode> cache_;
@@ -85,6 +82,11 @@ class ideal_cache_t
         using HashIterator = typename std::unordered_map<KeyT, ListIterator>::iterator;
 
     public:
+        size_t GetHits() const
+        {
+            return hits_;
+        }
+
         bool IsFull() const
         {
             return (capacity_ == cache_.size());
@@ -102,9 +104,7 @@ class ideal_cache_t
                     DeleteMostFar();
                 }
 
-                PushFront(key, slow_get_page);
-
-                SortCache();
+                PushNewElement(key, slow_get_page);
 
                 return false;
             }
@@ -112,6 +112,8 @@ class ideal_cache_t
             else
             {
                 AddNewHit(hit);
+
+                UpdateDistance(hit, key);
 
                 SortCache();
 
@@ -127,34 +129,68 @@ class ideal_cache_t
         }
 
         template<typename F>
-        void PushFront(KeyT key, F slow_get_page)
+        void PushNewElement(KeyT key, F slow_get_page)
         {   
             auto inserting_elem_iterator = unique_hash_.find(key);
 
             size_t distance = 0;
 
-            if (inserting_elem_iterator->second->location.size() != 1)
+            if (inserting_elem_iterator->second->location.size() == 1)
+            {
+                cache_.push_back({slow_get_page, key, distance});
+
+                ListIterator back_of_cache = cache_.end();
+
+                back_of_cache--;
+
+                hash_.emplace(key, back_of_cache);
+            }
+
+            else
             {
                 inserting_elem_iterator->second->location.pop_front();
 
                 distance = *inserting_elem_iterator->second->location.begin();    
-            }
 
-            cache_.push_front({slow_get_page, key, distance});
+                cache_.push_front({slow_get_page, key, distance});
             
-            hash_.emplace(key, cache_.begin());
+                hash_.emplace(key, cache_.begin());
+
+                SortCache();
+            }
         }
 
         void AddNewHit(HashIterator hit)
         {
             hits_++;
+
+            hit->second->hit_count++;
+        }
+
+        void UpdateDistance(HashIterator hit, KeyT key)
+        {
+            auto old_element = unique_hash_.find(key);
+
+            if (old_element->second->location.size() == 1)
+            {
+                cache_.erase(hit->second);
+                
+                hash_.erase(key);
+            }
+
+            else
+            {
+                old_element->second->location.pop_front();
+
+                hit->second->distance = *old_element->second->location.begin();
+            }
         }
 
         void SortCache()
         {
             for (ListIterator i = cache_.begin(); i != std::prev(cache_.end()); i++)
             {
-                if (i->distance < std::next(i)->distance)
+                if ((i->distance > std::next(i)->distance) && (std::prev(cache_.end())->distance != 0))
                 {
                     hash_[i->key] = std::next(i);
 
@@ -190,7 +226,7 @@ class ideal_cache_t
             int i = 0;
             
             for (auto x: cache_){
-                std::cout << "\t\t" << i++ <<": key = " << x.key << ", next element index = " << x.distance << "\n";
+                std::cout << "\t\t" << i++ <<": key = " << x.key << ", next element index = " << x.distance << ", hit count = " << x.hit_count << std::endl;
             }
 
             std::cout << "//====================End Dump====================//\n\n";
