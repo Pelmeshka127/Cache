@@ -1,5 +1,6 @@
-FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Wc++14-compat -Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts -Wconversion -Wctor-dtor-privacy -Wempty-body -Wfloat-equal -Wformat-nonliteral -Wformat-security -Wformat=2 -Winline -Wlong-long -Wnon-virtual-dtor -Wopenmp -Wpacked -Wpointer-arith -Winit-self -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=2 -Wsuggest-override -Wswitch-default -Wswitch-enum -Wundef -Wunreachable-code -Wunused -Wvariadic-macros -Wno-literal-range -Wno-missing-field-initializers -Wno-narrowing -Wno-old-style-cast -Wno-varargs -Wstack-protector -fcheck-new -fsized-deallocation -fstack-protector -fstrict-overflow -fno-omit-frame-pointer -Wlarger-than=8192 -fPIE -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow, -fsanitize=float-divide-by-zero,integer-divide-by-zero,nonnull-attribute,null, -fsanitize=address,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
+FLAGS = -std=c++17 -O0
 
+OPT_FLAGS = -DNDEBUG -std=c++17 -O2
 
 cache: lfu.o
 	g++ obj/lfu.o $(FLAGS) -o ./cache
@@ -24,3 +25,23 @@ comparation: comp.o
 
 comp.o:
 	g++ -c ./LFU/comparation.cpp $(FLAGS) -o obj/comp.o
+
+
+
+opt_cache: opt_lfu.o
+	g++ obj/lfu.o $(OPT_FLAGS) -o ./cache
+
+opt_lfu.o: ./LFU/lfu.cpp
+	g++ -c ./LFU/lfu.cpp $(OPT_FLAGS) -o obj/lfu.o
+
+opt_ideal_cache: opt_ideal.o
+	g++ obj/ideal.o $(OPT_FLAGS) -o ./ideal
+
+opt_ideal.o:
+	g++ -c ./LFU/ideal.cpp $(OPT_FLAGS) -o obj/ideal.o
+
+opt_comparation: opt_comp.o
+	g++ obj/comp.o $(OPT_FLAGS) -o ./comp
+
+opt_comp.o:
+	g++ -c ./LFU/comparation.cpp $(OPT_FLAGS) -o obj/comp.o

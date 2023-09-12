@@ -29,7 +29,7 @@ int main(int argc, char **argv)
         test_file >> elem;
 
         my_cache.LookUpUpdate(elem, slow_get_page);
-        my_cache.Dump();
+        // my_cache.Dump();
     }
 
     std::cout << "Total hits are " << my_cache.GetHits() << std::endl;

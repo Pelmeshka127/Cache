@@ -32,25 +32,18 @@ int main(int argc, char **argv)
         array.push_back(key);
     }
 
-    for (auto elem : array)
-    {
-        std::cout << elem << " ";
-    }
-
-    std::cout << std::endl;
-
     ideal_cache::ideal_cache_t<int> my_cache(array, my_capacity);
 
-    my_cache.DumpArray();
+    // my_cache.DumpArray();
 
     for (auto elem : array)
     {
         my_cache.LookUpUpdate(elem, slow_get_page(elem));
 
-        my_cache.DumpCache();
-
-        std::cout << "Total hits are " << my_cache.GetHits() << std::endl;
+        // my_cache.DumpCache();
     }
+
+    std::cout << "Total hits are " << my_cache.GetHits() << std::endl;
 
     test_file.close();
 

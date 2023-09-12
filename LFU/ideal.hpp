@@ -33,11 +33,8 @@ class ideal_cache_t
         std::unordered_map<KeyT, UniqueKeyIterator> unique_hash_;
 
     public:
-        ideal_cache_t(const std::vector<KeyT>& array, size_t capacity)
+        ideal_cache_t(const std::vector<KeyT>& array, size_t capacity) : capacity_{capacity}, hits_{0}
         {
-            capacity_ = capacity;
-            hits_     = 0;
-
             size_t array_index = 0;
             for (auto array_element = array.begin(); array_element != array.end(); array_element++)
             {
