@@ -7,6 +7,7 @@
 #include <iterator>
 #include <vector>
 #include <fstream>
+#include <ctime>
 
 //==========================================================================================//
 
@@ -134,7 +135,7 @@ class ideal_cache_t
 
             if (inserting_elem_iterator->second->location.size() == 1)
             {
-                cache_.push_back({slow_get_page, key, distance});
+                cache_.push_back({slow_get_page(key), key, distance});
 
                 ListIterator back_of_cache = cache_.end();
 
@@ -149,7 +150,7 @@ class ideal_cache_t
 
                 distance = *inserting_elem_iterator->second->location.begin();    
 
-                cache_.push_front({slow_get_page, key, distance});
+                cache_.push_front({slow_get_page(key), key, distance});
             
                 hash_.emplace(key, cache_.begin());
 

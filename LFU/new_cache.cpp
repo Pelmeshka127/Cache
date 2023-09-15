@@ -1,12 +1,12 @@
-#include "ideal.hpp"
+#include "new_cache.hpp"
 
-//==========================================================================================//
-
-using KeyT = int;
-KeyT slow_get_page(KeyT key) {return key;}
+int slow_get_page(int key)
+{
+    return key;
+}
 
 int main(int argc, char **argv)
-{
+{    
     int mode = 0;
 
     std::cout << "Введите 1 для ввода данных с клавиатуры" << std::endl
@@ -21,17 +21,7 @@ int main(int argc, char **argv)
 
         std::cin >> my_capacity >> values_count;
 
-        std::vector<KeyT> array;
-        for (size_t i = 0; i != values_count; i++)
-        {
-            int key = 0;
-
-            std::cin >> key;
-            
-            array.push_back(key);
-        }
-
-        ideal_cache::ideal_cache_t<int> my_cache(array, my_capacity);
+        new_cache::new_cache_t<int> my_cache(my_capacity);
 
         const std::clock_t start = std::clock();
 
@@ -41,7 +31,7 @@ int main(int argc, char **argv)
             std::cin >> elem;
 
             my_cache.LookUpUpdate(elem, slow_get_page);
-            // my_cache.Dump();
+            my_cache.Dump();
         }
 
         std::cout << "Total hits are " << my_cache.GetHits() << std::endl;
@@ -57,7 +47,7 @@ int main(int argc, char **argv)
             return -1;
         }
 
-        std::ifstream test_file{};
+        std::ifstream test_file;
 
         test_file.open(argv[1]);
 
@@ -66,38 +56,25 @@ int main(int argc, char **argv)
 
         test_file >> my_capacity >> values_count;
 
-        std::vector<KeyT> array;
-        for (size_t i = 0; i != values_count; i++)
-        {
-            int key = 0;
-
-            test_file >> key;
-            
-            array.push_back(key);
-        }
-
-        ideal_cache::ideal_cache_t<int> my_cache(array, my_capacity);
-
-        // my_cache.DumpArray();
+        new_cache::new_cache_t<int> my_cache(my_capacity);
 
         const std::clock_t start = std::clock();
 
-        for (auto elem : array)
+        for (size_t i = 0; i < values_count; i++)
         {
-            my_cache.LookUpUpdate(elem, slow_get_page);
+            int elem = 0;
+            test_file >> elem;
 
-            // my_cache.DumpCache();
+            my_cache.LookUpUpdate(elem, slow_get_page);
+            // my_cache.Dump();
         }
 
         std::cout << "Total hits are " << my_cache.GetHits() << std::endl;
 
         std::cout << "Time is " << (std::clock() - start) / (double) CLOCKS_PER_SEC << std::endl;
-
+        
         test_file.close();
-
     }
 
     return 0;
 }
-
-//==========================================================================================//
