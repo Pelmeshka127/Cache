@@ -20,18 +20,6 @@ test: test.o
 test.o:
 	g++ -c ./Tests/tests.cpp $(FLAGS) -o obj/test.o
 
-comparation: comp.o
-	g++ obj/comp.o $(FLAGS) -o ./obj/comp
-
-comp.o:
-	g++ -c ./LFU/comparation.cpp $(FLAGS) -o obj/comp.o
-
-new_cache: new_cache.o
-	g++ obj/new_cache.o $(FLAGS) -o ./obj/new_cache
-
-new_cache.o: ./LFU/new_cache.cpp
-	g++ -c ./LFU/new_cache.cpp $(FLAGS) -o obj/new_cache.o
-
 
 opt_cache: opt_lfu.o
 	g++ obj/lfu.o $(OPT_FLAGS) -o ./obj/cache
@@ -50,9 +38,3 @@ opt_comparation: opt_comp.o
 
 opt_comp.o: ./LFU/comparation.cpp
 	g++ -c ./LFU/comparation.cpp $(OPT_FLAGS) -o obj/comp.o
-
-opt_new_cache: opt_new_cache.o
-	g++ obj/new_cache.o $(OPT_FLAGS) -o ./obj/new_cache
-
-opt_new_cache.o: ./LFU/new_cache.cpp
-	g++ -c ./LFU/new_cache.cpp $(OPT_FLAGS) -o obj/new_cache.o

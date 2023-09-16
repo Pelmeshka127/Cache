@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
     for (auto elem : array)
     {
-        ideal_cache.LookUpUpdate(elem, slow_get_page(elem));
+        ideal_cache.LookUpUpdate(elem, slow_get_page);
     }
 
     std::cout << "Total hit in ideal is " << ideal_cache.GetHits() << std::endl;

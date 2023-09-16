@@ -1,10 +1,10 @@
 #ifndef LFU_HPP_
 #define LFU_HPP_
 
+#include <iostream>
 #include <list>
 #include <unordered_map>
 #include <iterator>
-#include <iostream>
 #include <fstream>
 #include <ctime>
 
@@ -14,39 +14,52 @@ namespace lfu
 {
 
 template<typename PageT, typename KeyT = int>
-class cache_t 
+class cache_t
 {
     private:
-        std::size_t capacity_;
+        const size_t capacity_;
 
-        std::size_t hits_;
-        
-        struct CacheNode
-        {
-            PageT   data;
-            size_t  hit_count;
-            KeyT    key;
+        size_t size_;
+
+        size_t hits_;
+
+        struct FrequencyNode;
+
+        using FrequencyIterator = typename std::list<FrequencyNode>::iterator;
+
+        struct CacheNode {
+            PageT               page;
+            KeyT                key;
+            FrequencyIterator   freq_iter;
         };
 
-        std::list<CacheNode> cache_;
+        struct FrequencyNode {
+            size_t               hit_count = 0;
+            std::list<CacheNode> sublist;
+        };
+
+        std::list<FrequencyNode> cache_;
 
         using ListIterator = typename std::list<CacheNode>::iterator;
-        
+
         std::unordered_map<KeyT, ListIterator> hash_;
 
-        using HashIterator = typename std::unordered_map<KeyT, ListIterator>::iterator;
-    
     public:
-        cache_t(size_t sz): capacity_{sz},  hits_{0} {};
+        cache_t(size_t capacity) : capacity_{capacity}, size_{0},  hits_{0} {}
 
         size_t GetHits() const
         {
             return hits_;
         }
 
-        bool IsFull() const 
+        bool IsFull() const
         {
-            return (capacity_ == cache_.size());
+            return (capacity_ == size_);
+        }
+
+        bool IsEmpty() const
+        {
+            return (cache_.size() == 0);
         }
 
         template<typename F>
@@ -57,63 +70,69 @@ class cache_t
             if (hit == hash_.end())
             {
                 if (IsFull())
-                    DeleteMinCounting();
+                    DeleteMinCounting(key);
 
-                PushFront(key, slow_get_page);
+                if (IsEmpty())
+                    cache_.push_front({});
 
-                SortCache();
+                if (cache_.front().hit_count != 0)
+                    cache_.push_front({});
 
+                PushNewElement(key, slow_get_page);
+                
                 return false;
-
             }
 
             else
             {
-                AddNewHit(hit);
+                hits_++;
 
-                SortCache();
+                AddNewHit(hit->second);
 
                 return true;
             }
         }
 
-        void DeleteMinCounting()
-        {
-            hash_.erase(cache_.back().key);
-
-            cache_.pop_back();
-        }
-
         template<typename F>
-        void PushFront(KeyT key, F slow_get_page)
+        void PushNewElement(KeyT key, F slow_get_page)
         {
-            cache_.push_front({slow_get_page(key), 0, key});
+            cache_.front().sublist.push_front({slow_get_page(key), key, cache_.begin()});
 
-            hash_.emplace(key, cache_.begin());
+            hash_.emplace(key, cache_.front().sublist.begin());
+
+            size_++;
         }
 
-        void AddNewHit(HashIterator hit)
+        void DeleteMinCounting(KeyT key)
         {
-            hits_++;
+            hash_.erase(cache_.front().sublist.back().key);
 
-            hit->second->hit_count++;
+            cache_.front().sublist.pop_back();
+
+            size_--;
         }
 
-        void SortCache()
+        void AddNewHit(ListIterator iterator)
         {
-            for(ListIterator i = cache_.begin(); i != std::prev(cache_.end()); i++)
-            {
-                if (i->hit_count < std::next(i)->hit_count)
-                {
-                    hash_[i->key] = std::next(i);
+            size_t frequency                = iterator->freq_iter->hit_count;
+            
+            FrequencyIterator freq_iterator = iterator->freq_iter;
 
-                    hash_[std::next(i)->key] = i;
+            if (freq_iterator == std::prev(cache_.end()))
+                cache_.push_back({frequency + 1, {}});
 
-                    std::swap(*i, *std::next(i));
-                }
-            }
+            else if(std::next(freq_iterator)->hit_count != frequency + 1)
+                cache_.insert(std::next(freq_iterator), {frequency + 1, {}});
+
+            FrequencyIterator next_freq_iterator = std::next(freq_iterator);
+
+            next_freq_iterator->sublist.splice(next_freq_iterator->sublist.begin(), freq_iterator->sublist, iterator);
+
+            if (freq_iterator->sublist.size() == 0)
+                cache_.erase(freq_iterator);
+
+            freq_iterator = next_freq_iterator;
         }
-
 
         void Dump() const
         {
@@ -125,10 +144,16 @@ class cache_t
 
             std::cout << "\t\tCache: \n";
 
-            int i = 0;
-            
-            for (auto x: cache_){
-                std::cout << "\t\t" << i++ <<": key = " << x.key << ", hit_count = " << x.hit_count << "\n";
+            for (auto x: cache_)
+            {
+                std::cout << "\t\t" << "Hit Count " << x.hit_count << std::endl;
+                    
+                int i = 0;
+
+                for (auto y: x.sublist)
+                {
+                    std::cout << "\t\t" << i++ <<": key = " << y.key << std::endl;
+                }
             }
 
             std::cout << "//====================End Dump====================//\n\n";
@@ -136,7 +161,6 @@ class cache_t
 };
 
 }
-
 //==========================================================================================//
 
 #endif
