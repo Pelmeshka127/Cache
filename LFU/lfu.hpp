@@ -116,22 +116,21 @@ class cache_t
         {
             size_t frequency                = iterator->freq_iter->hit_count;
             
-            FrequencyIterator freq_iterator = iterator->freq_iter;
-
-            if (freq_iterator == std::prev(cache_.end()))
+            if (iterator->freq_iter == std::prev(cache_.end()))
                 cache_.push_back({frequency + 1, {}});
 
-            else if(std::next(freq_iterator)->hit_count != frequency + 1)
-                cache_.insert(std::next(freq_iterator), {frequency + 1, {}});
+            else if(std::next(iterator->freq_iter)->hit_count != frequency + 1)
+                cache_.insert(std::next(iterator->freq_iter), {frequency + 1, {}});
 
-            FrequencyIterator next_freq_iterator = std::next(freq_iterator);
+            FrequencyIterator next_freq_iterator = std::next(iterator->freq_iter);
 
-            next_freq_iterator->sublist.splice(next_freq_iterator->sublist.begin(), freq_iterator->sublist, iterator);
+            next_freq_iterator->sublist.splice(next_freq_iterator->sublist.begin(), 
+                                               iterator->freq_iter->sublist, iterator);
 
-            if (freq_iterator->sublist.size() == 0)
-                cache_.erase(freq_iterator);
+            if (iterator->freq_iter->sublist.size() == 0)
+                cache_.erase(iterator->freq_iter);
 
-            freq_iterator = next_freq_iterator;
+            iterator->freq_iter = next_freq_iterator;
         }
 
         void Dump() const

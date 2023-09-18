@@ -54,12 +54,9 @@ class ideal_cache_t
                 }
 
                 else
-                {
                     find_element->second->location.push_back(size_t(std::distance(array.begin(), array_element)));
-                }
 
                 array_index++;
-
             }
         }
 
@@ -68,7 +65,6 @@ class ideal_cache_t
             PageT   page;
             KeyT    key;
             size_t  distance;
-            size_t  hit_count;
         };
 
         std::list<CacheNode> cache_;
@@ -161,8 +157,6 @@ class ideal_cache_t
         void AddNewHit(HashIterator hit)
         {
             hits_++;
-
-            hit->second->hit_count++;
         }
 
         void UpdateDistance(HashIterator hit, KeyT key)
