@@ -23,14 +23,14 @@ int main(int argc, char **argv)
         array.push_back(key);
     }
 
-    ideal_cache::ideal_cache_t<int> my_cache(array, my_capacity);
+    ideal::cache_t<int> my_cache(my_capacity, array);
 
-    const std::clock_t start = std::clock();
+    // const std::clock_t start = std::clock();
 
     for (auto x: array)
     {
         my_cache.LookUpUpdate(x, slow_get_page);
-        // my_cache.Dump();
+        my_cache.Dump();
     }
 
     std::cout << "Total hits are " << my_cache.GetHits() << std::endl;
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 //         array.push_back(key);
 //     }
 
-//     ideal_cache::ideal_cache_t<int> my_cache(array, my_capacity);
+//     ideal::cache_t<int> my_cache(my_capacity, array);
 
 //     // my_cache.DumpArray();
 
