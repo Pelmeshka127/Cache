@@ -13,7 +13,7 @@
 namespace lfu
 {
 
-template<typename PageT, typename KeyT = int>
+template<typename PageT, typename KeyT>
 class cache_t
 {
     private:

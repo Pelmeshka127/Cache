@@ -15,7 +15,7 @@
 namespace ideal
 {
 
-template <typename PageT, typename KeyT = int>
+template <typename PageT, typename KeyT>
 class cache_t
 {
     private:
@@ -37,7 +37,7 @@ class cache_t
         std::unordered_set<KeyT> data_set_;
 
     public:
-        cache_t(const size_t capacity, std::vector<int> &data) : capacity_{capacity}, hits_{0}
+        cache_t(const size_t capacity, std::vector<KeyT> &data) : capacity_{capacity}, hits_{0}
         {
             size_t index = 0;
 
