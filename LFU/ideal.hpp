@@ -87,6 +87,7 @@ class cache_t
 
         void DeleteMostFar()
         {
+            // printf("Error is in Deleting\n");
             size_t max_distance = 0;
 
             ListIterator erasing_element {};
@@ -123,6 +124,7 @@ class cache_t
         template<typename F>
         void PushNewElement(KeyT key, F slow_get_page)
         {
+            // printf("Error is in Pushing new elem\n");
             cache_.push_back({slow_get_page(key), key});
 
             data_set_.insert(key);
@@ -130,6 +132,8 @@ class cache_t
 
         void UpdateElementDistance(KeyT key)
         {
+            // std::cout << key << std::endl;
+            // printf("Error is in Updating distance\n");
             hash_[key].pop_front();
         }
 
@@ -144,7 +148,10 @@ class cache_t
             std::cout << "\t\tCache: \n";
 
             for (auto x: cache_)
+            {
                 auto hit = hash_.find(x.key);
+                std::cout << hit->first << hit->second << std::endl;
+            }
 
             std::cout << "\t\t" << "Total hits " << hits_ << std::endl;
 

@@ -31,7 +31,7 @@ int main(int argc, char** argv)
         array.push_back(key);
     }
 
-    lfu::cache_t<int> lfu_cache(my_capacity);
+    lfu::cache_t<int, int> lfu_cache(my_capacity);
 
     for (auto i : array)
     {
@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 
     std::cout << "Total hit in lfu is " << lfu_cache.GetHits() << std::endl;
 
-    ideal_cache::ideal_cache_t<int> ideal_cache(array, my_capacity);
+    ideal::cache_t<int, int> ideal_cache(my_capacity, array);
 
     for (auto elem : array)
     {

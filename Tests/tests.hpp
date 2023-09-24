@@ -37,7 +37,7 @@ class testgen_t
 
                 for (size_t count = 0; count < input_size; count++)
                 {
-                    double elem = double (std::rand() % 100) / (std::rand() % 10);
+                    int elem = int (std::rand() % 1000);
 
                     test_files[index] << elem << " ";
                 }
