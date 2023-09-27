@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 
     std::cout << "Total hit in lfu is " << lfu_cache.GetHits() << std::endl;
 
-    ideal::cache_t<int, int> ideal_cache(my_capacity, array);
+    ideal_cache::cache_t<int, int> ideal_cache(my_capacity, array);
 
     for (auto elem : array)
     {
