@@ -114,7 +114,7 @@ class cache_t
 
         void AddNewHit(ListIterator iterator)
         {
-            size_t frequency                = iterator->freq_iter->hit_count;
+            size_t frequency = iterator->freq_iter->hit_count;
             
             if (iterator->freq_iter == std::prev(cache_.end()))
                 cache_.push_back({frequency + 1, {}});
@@ -160,6 +160,7 @@ class cache_t
 };
 
 }
+
 //==========================================================================================//
 
 #endif

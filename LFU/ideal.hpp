@@ -12,7 +12,7 @@
 
 //==========================================================================================//
 
-namespace ideal
+namespace ideal_cache
 {
 
 template <typename PageT, typename KeyT>
@@ -24,25 +24,29 @@ class cache_t
         size_t hits_;
 
         struct CacheNode {
-            KeyT    key;
             PageT   page;
+            KeyT    key;
         };
 
         std::list<CacheNode> cache_;
 
-        using ListIterator = typename std::list<CacheNode>::iterator;
+        using CacheIterator = typename std::list<CacheNode>::iterator;
 
         std::unordered_map<KeyT, std::list<size_t>> hash_;
 
+        using HashIterator = typename std::unordered_map<KeyT, std::list<size_t>>::iterator;
+
         std::unordered_set<KeyT> data_set_;
 
-    public:
-        cache_t(const size_t capacity, std::vector<KeyT> &data) : capacity_{capacity}, hits_{0}
-        {
-            size_t index = 0;
+        using SetIterator  = typename std::unordered_set<KeyT>::iterator;
 
-            for (auto element: data)
-                hash_[element].push_back(index++);
+    public:
+        cache_t(const size_t capacity, const std::vector<KeyT>& data) : capacity_{capacity}, hits_{0}
+        {
+            size_t position = 0;
+
+            for (auto elem : data)
+                hash_[elem].push_back(position++);
         }
 
         bool IsFull() const
@@ -56,85 +60,79 @@ class cache_t
         }
 
         template<typename F>
-        bool LookUpUpdate(KeyT key, F slow_get_page)
+        void LookUpUpdate(KeyT key, F slow_get_page)
         {
-            auto hit = data_set_.find(key);
+            auto set_hit = data_set_.find(key);
 
-            if (hit == data_set_.end())
+            if (set_hit == data_set_.end())
             {
                 if (hash_[key].size() == 1)
-                    return false;
+                    return;
+
+                data_set_.insert(key);
 
                 if (IsFull())
-                    DeleteMostFar();
+                {
+                    CacheIterator erasing_elem = GetDeletingElement();
 
-                PushNewElement(key, slow_get_page);
+                    data_set_.erase(erasing_elem->key);
 
-                UpdateElementDistance(key);
+                    *erasing_elem = {slow_get_page(key), key};
+                }
 
-                return false;
+                else
+                    PushNewElement(slow_get_page, key);
             }
 
             else
-            {
                 hits_++;
 
-                UpdateElementDistance(key);
-
-                return true;
-            }
+            UpdateElementDistance(key);
         }
 
-        void DeleteMostFar()
+        CacheIterator GetDeletingElement()
         {
-            // printf("Error is in Deleting\n");
             size_t max_distance = 0;
 
-            ListIterator erasing_element {};
+            CacheIterator erasing_elem {};
 
             for (auto cache_elem = cache_.begin(); cache_elem != cache_.end(); cache_elem++)
             {
-                auto nearest_element_position = hash_[cache_elem->key].begin();
-
-                if (*nearest_element_position > max_distance)
+                if (hash_.find(cache_elem->key) != hash_.end())
                 {
-                    max_distance    = *nearest_element_position;
+                    auto nearest_element_position = hash_[cache_elem->key].begin();
 
-                    erasing_element = cache_elem;
-                }    
+                    if (*nearest_element_position > max_distance)
+                    {
+                        max_distance = *nearest_element_position;
+
+                        erasing_elem = cache_elem;
+                    }
+                }
+
+                else
+                {
+                    erasing_elem = cache_elem;
+
+                    break;
+                }
             }
 
-            if (max_distance)
-            {
-                data_set_.erase(erasing_element->key);
-
-                cache_.erase(erasing_element);
-            }
-
-            else
-            {
-                data_set_.erase(cache_.begin()->key);
-
-                cache_.pop_front();
-            }
-
-
-        }
-
-        template<typename F>
-        void PushNewElement(KeyT key, F slow_get_page)
-        {
-            // printf("Error is in Pushing new elem\n");
-            cache_.push_back({slow_get_page(key), key});
-
-            data_set_.insert(key);
+            return erasing_elem;
         }
 
         void UpdateElementDistance(KeyT key)
         {
-            // std::cout << key << std::endl;
-            // printf("Error is in Updating distance\n");
             hash_[key].pop_front();
+
+            if (hash_[key].size() == 0)
+                hash_.erase(key);
+        }
+
+        template<typename F>
+        void PushNewElement(F slow_get_page, KeyT key)
+        {
+            cache_.push_back({slow_get_page(key), key});
         }
 
         void Dump() const
@@ -150,7 +148,7 @@ class cache_t
             for (auto x: cache_)
             {
                 auto hit = hash_.find(x.key);
-                std::cout << hit->first << hit->second << std::endl;
+                std::cout << "Element is " << x.key << std::endl;
             }
 
             std::cout << "\t\t" << "Total hits " << hits_ << std::endl;
