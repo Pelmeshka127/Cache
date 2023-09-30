@@ -20,48 +20,33 @@ cd Cache
 Размер кэша, количество считываемых элементов и количество тестов.
 
 ```
-make test
+cmake -B build
 
-./obj/test
+cd build/tests/
+
+cmake --build .
+
+./tests
 ```
 
-Для запуска кэша:
+Для запуска кэшей:
 
 ```
-make cache
+cmake -B build
 
-./obj/cache <test>
+cd build/lfu/
+
+cmake --build .
+```
+
+Далее для запуска работы LFU:
+
+```
+./lfu
 ```
 
 Для запуска работы идеального кеша:
 
 ```
-make ideal_cache
-
-./obj/ideal <test>
-```
-
-
-Сборка кэша, ориентированная для тестов на произодительность:
-
-```
-make opt_cache
-
-./obj/cache <test>
-```
-
-Сборка идеального кэша, ориентированная для тестов на произодительность:
-
-```
-make opt_ideal_cache
-
-./obj/ideal <test>
-```
-
-Сборка компаратора двух кэшей:
-
-```
-make opt_comparation
-
-./obj/comp <test>
+./ideal
 ```
