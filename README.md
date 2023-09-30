@@ -26,7 +26,7 @@ cd build/tests/
 
 cmake --build .
 
-./tests
+./test
 ```
 
 Для запуска кэшей:
