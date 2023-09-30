@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 
     std::cout << "Total hits are " << my_cache.GetHits() << std::endl;
 
-    // std::cout << "Time is " << (std::clock() - start) / (double) CLOCKS_PER_SEC << std::endl;
+    std::cout << "Time is " << (std::clock() - start) / (double) CLOCKS_PER_SEC << std::endl;
 
     return 0;
 }

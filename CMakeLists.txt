@@ -6,8 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_CXX_FLAGS "-O2 -DNDEBUG")
-
 add_subdirectory(./lfu)
 
-add_subdirectory(./tests)
+add_subdirectory(./tests) 
